@@ -56,9 +56,16 @@ public class TeleOpV2 extends LinearOpMode {
     private ButtonHelper helper;
     private ButtonHelper helper2;
 
+    //Declaring control classes
+    private Elevator elevator;
+    private ElevatorNoEnc elevatorNoEnc;
+    private Grabber grabber;
+    private DriveTrain driveTrain;
+
     //Runtime variables
-    public double MOTOR_SPEED_MULTIPLIER = 1.0;
+    private double MOTOR_SPEED_MULTIPLIER = 1.0;
     static boolean clawStateOpened = false;
+    final boolean USE_ENCODER_FOR_ELEVATOR = false;
 
     //OpMode Version
     private final String OPMODE_VERSION = "2.0";
@@ -70,7 +77,8 @@ public class TeleOpV2 extends LinearOpMode {
         helper2 = new ButtonHelper(gamepad2);
 
         //Declaring functionality classes
-        Elevator elevator = new Elevator();
+        if(USE_ENCODER_FOR_ELEVATOR) Elevator elevator = new Elevator();
+        else ElevatorNoEnc elevatorNoEnc = new ElevatorNoEnc();
         DriveTrain driveTrain = new DriveTrain();
 
         //Loading configurations
@@ -78,11 +86,13 @@ public class TeleOpV2 extends LinearOpMode {
 
         //Initializing functionality classes
         driveTrain.init(hardwareMap,config);
-        elevator.init(hardwareMap,config);
+        if(USE_ENCODER_FOR_ELEVATOR) elevator.init(hardwareMap,config);
+        else elevatorNoEnc.init(hardwareMap,config);
+        grabber.init(hardwareMap,config);
 
         //Configuring elevator initial positions
-        elevator.closeGrabber();
-        elevator.setLiftZeroPosition();
+        grabber.closeGrabber();
+        grabber.setLiftZeroPosition();
 
         //Initializing TelemetryWrapper
         TelemetryWrapper.init(telemetry,11);
@@ -107,19 +117,30 @@ public class TeleOpV2 extends LinearOpMode {
             //Movement control
             if (Math.abs(drivey) > 0.01 || Math.abs(drivex) > 0.01 || Math.abs(turn) > 0.01) {
                 driveTrain.move(drivex, drivey, turn);
-            } else {
+            } 
+            else {
                 drivey = -gamepad2.left_stick_y * 0.25;
                 drivex = -gamepad2.left_stick_x * 0.25;
                 turn = gamepad2.right_stick_x * 0.25;
                 driveTrain.move(drivex, drivey, turn);
             }
 
-            //Elevator control
-            if(gamepad1.dpad_up) {
-                elevator.moveUp();
+            //Elevator control with encoder and w/o encoder
+            if(USE_ENCODER_FOR_ELEVATOR) {
+                if(gamepad1.dpad_up) {
+                    elevator.moveUp();
+                }
+                else if(gamepad1.dpad_down) {
+                    elevator.moveDown();
+                }
             }
-            else if(gamepad1.dpad_down) {
-                elevator.moveDown();
+            else {
+                if(gamepad1.dpad_up) {
+                    elevatorNoEnc.moveUp();
+                }
+                else if(gamepad1.dpad_down) {
+                    elevatorNoEnc.moveDown();
+                }
             }
 
             //Claw/Grabber value change
