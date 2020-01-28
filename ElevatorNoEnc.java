@@ -18,16 +18,12 @@ public class ElevatorNoEnc {
 
         LIFT_POWER = config.getDouble("lift_power", 1.0);
 
-        GRABBER_CLOSED_POSITION = config.getDouble("grabber_closed_position",0.0);
-        GRABBER_OPENED_POSITION = config.getDouble("grabber_open_position",0.8);
 
         elevator = hwMap.get(DcMotor.class, "elevator");
-        grabber = hwMap.get(Servo.class, "grabber");
 
         elevator.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
         elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        grabber.setDirection(Servo.Direction.FORWARD);
     }
 
     public void moveUp() {
