@@ -77,8 +77,8 @@ public class TeleOpV2 extends LinearOpMode {
         helper2 = new ButtonHelper(gamepad2);
 
         //Declaring functionality classes
-        if(USE_ENCODER_FOR_ELEVATOR) Elevator elevator = new Elevator();
-        else ElevatorNoEnc elevatorNoEnc = new ElevatorNoEnc();
+        if(USE_ENCODER_FOR_ELEVATOR) elevator = new Elevator();
+        else elevatorNoEnc = new ElevatorNoEnc();
         DriveTrain driveTrain = new DriveTrain();
 
         //Loading configurations
@@ -92,7 +92,7 @@ public class TeleOpV2 extends LinearOpMode {
 
         //Configuring elevator initial positions
         grabber.closeGrabber();
-        grabber.setLiftZeroPosition();
+        if(USE_ENCODER_FOR_ELEVATOR) elevator.setLiftZeroPosition();
 
         //Initializing TelemetryWrapper
         TelemetryWrapper.init(telemetry,11);
