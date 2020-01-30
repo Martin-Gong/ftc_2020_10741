@@ -56,15 +56,9 @@ public class TeleOpV2 extends LinearOpMode {
     private ButtonHelper helper;
     private ButtonHelper helper2;
 
-    //Declaring control classes
-    private Elevator elevator;
-    private ElevatorNoEnc elevatorNoEnc;
-    private Grabber grabber;
-    private DriveTrain driveTrain;
-
     //Runtime variables
     private double MOTOR_SPEED_MULTIPLIER = 1.0;
-    static boolean clawStateOpened = false;
+    static boolean clawStateOpened = true;
     final boolean USE_ENCODER_FOR_ELEVATOR = false;
 
     //OpMode Version
@@ -76,22 +70,31 @@ public class TeleOpV2 extends LinearOpMode {
         helper = new ButtonHelper(gamepad1);
         helper2 = new ButtonHelper(gamepad2);
 
+        Elevator elevator;
+        ElevatorNoEnc elevatorNoEnc;
+        DriveTrain driveTrain;
+        Grabber grabber;
+
         //Declaring functionality classes
         if(USE_ENCODER_FOR_ELEVATOR) elevator = new Elevator();
         else elevatorNoEnc = new ElevatorNoEnc();
-        DriveTrain driveTrain = new DriveTrain();
+        driveTrain = new DriveTrain();
+        grabber = new Grabber();
 
         //Loading configurations
         MOTOR_SPEED_MULTIPLIER = config.getDouble("motor_speed_multiplier",1.0);
 
         //Initializing functionality classes
         driveTrain.init(hardwareMap,config);
-        if(USE_ENCODER_FOR_ELEVATOR) elevator.init(hardwareMap,config);
-        else elevatorNoEnc.init(hardwareMap,config);
         grabber.init(hardwareMap,config);
+        if(USE_ENCODER_FOR_ELEVATOR)
+            elevator.init(hardwareMap,config);
+        else
+            elevatorNoEnc.init(hardwareMap,config);
+
 
         //Configuring elevator initial positions
-        grabber.closeGrabber();
+        grabber.openGrabber();
         if(USE_ENCODER_FOR_ELEVATOR) elevator.setLiftZeroPosition();
 
         //Initializing TelemetryWrapper
@@ -110,18 +113,18 @@ public class TeleOpV2 extends LinearOpMode {
             helper2.update();
 
             //Get values for movement
-            double drivey =  -gamepad1.left_stick_y*MOTOR_SPEED_MULTIPLIER;
-            double drivex =  -gamepad1.left_stick_x*MOTOR_SPEED_MULTIPLIER;
-            double turn  =  gamepad1.right_stick_x*MOTOR_SPEED_MULTIPLIER;
+            double drivey =  -gamepad1.right_stick_y*MOTOR_SPEED_MULTIPLIER;
+            double drivex =  -gamepad1.right_stick_x*MOTOR_SPEED_MULTIPLIER;
+            double turn  =  gamepad1.left_stick_x*MOTOR_SPEED_MULTIPLIER;
 
             //Movement control
             if (Math.abs(drivey) > 0.01 || Math.abs(drivex) > 0.01 || Math.abs(turn) > 0.01) {
                 driveTrain.move(drivex, drivey, turn);
             } 
             else {
-                drivey = -gamepad2.left_stick_y * 0.25;
-                drivex = -gamepad2.left_stick_x * 0.25;
-                turn = gamepad2.right_stick_x * 0.25;
+                drivey = -gamepad2.right_stick_y * 0.25;
+                drivex = -gamepad2.right_stick_x * 0.25;
+                turn = gamepad2.left_stick_x * 0.25;
                 driveTrain.move(drivex, drivey, turn);
             }
 
@@ -135,11 +138,14 @@ public class TeleOpV2 extends LinearOpMode {
                 }
             }
             else {
-                if(gamepad1.dpad_up) {
+                if(helper.pressed(ButtonHelper.right_bumper)) {
                     elevatorNoEnc.moveUp();
                 }
-                else if(gamepad1.dpad_down) {
+                else if(helper.pressed(ButtonHelper.left_bumper)) {
                     elevatorNoEnc.moveDown();
+                }
+                else {
+                    elevatorNoEnc.stop();
                 }
             }
 
@@ -150,19 +156,18 @@ public class TeleOpV2 extends LinearOpMode {
 
             //Claw/Grabber position execution
             if(clawStateOpened) {
-                elevator.openGrabber();
+                grabber.openGrabber();
             }
             else {
-                elevator.closeGrabber();
+                grabber.closeGrabber();
             }
 
             //Updating all variable information to Telemetry Display
             TelemetryWrapper.setLine(0, "TeleOpMode v" + OPMODE_VERSION + "  Time Elapsed[s]: " + (runtime.milliseconds()/1000));
             TelemetryWrapper.setLine(1, "Motors Multiplier: : " + MOTOR_SPEED_MULTIPLIER);
             TelemetryWrapper.setLine(2,"Motors: drivex: " + drivex +" drivey: " + drivey+" turn: "+turn);
-            TelemetryWrapper.setLine(3, "Pos Open/Closed: " + elevator.GRABBER_OPENED_POSITION + "/" + elevator.GRABBER_CLOSED_POSITION + "servoStatus: " + clawStateOpened);
-            TelemetryWrapper.setLine(4,"Elevator StepsPerMove: " + elevator.LIFT_COUNTS_PER_UPDOWN_EFFORT + "  Elevator LiftPower: " + elevator.LIFT_POWER);
-            TelemetryWrapper.setLine(5,"Elevator Position: " + elevator.elevator.getCurrentPosition());
+            TelemetryWrapper.setLine(3, "Pos Open/Closed: " + grabber.GRABBER_OPENED_POSITION + "/" + grabber.GRABBER_CLOSED_POSITION + "servoStatus: " + clawStateOpened);
+            TelemetryWrapper.setLine(4,"Elevator Power: " + "N/A");
 
             idle();
         }

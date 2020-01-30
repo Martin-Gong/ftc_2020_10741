@@ -21,8 +21,8 @@ public class DriveTrainByEncoder
     DcMotor leftBack  = null;
     DcMotor rightBack  = null;
     HardwareMap hwMap = null;
-    private ElapsedTime runtime = new ElapsedTime();
 
+    private ElapsedTime runtime = new ElapsedTime();
 
     double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
     double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
@@ -34,12 +34,10 @@ public class DriveTrainByEncoder
     double     COUNTS_PER_DEGREE       = WHEEL_DIAGONAL_DISTANCE / WHEEL_DIAMETER_MM  * COUNTS_PER_MOTOR_REV / 360. * DEGREE_CORRECTION;
     double     XY_CORRECTION           = 1.2;
 
-//    static final double     DRIVE_SPEED             = 0.6;
-//    static final double     TURN_SPEED              = 0.5;
-
     public void init(HardwareMap Map, Config config) {
         hwMap = Map;
-// not use the front drive temporary
+
+        // not use the front drive temporary
         leftFront = hwMap.get(DcMotor.class, "fl_drive");
         rightFront = hwMap.get(DcMotor.class, "fr_drive");
         leftBack = hwMap.get(DcMotor.class, "rl_drive");
@@ -54,10 +52,6 @@ public class DriveTrainByEncoder
         rightBack.setPower(0);
 
         //read properties from file.....
-        //counts_per_motor_rev = 1440
-        //drive_gear_reduction = 1.0
-        //wheel_diagonal_distance = 450.
-        //wheel_diameter = 100.
         COUNTS_PER_MOTOR_REV = config.getDouble("counts_per_motor_rev", 1440);
         DRIVE_GEAR_REDUCTION = config.getDouble("drive_gear_reduction",1.0);
         WHEEL_DIAGONAL_DISTANCE = config.getDouble("wheel_diagonal_distance", 450.);
@@ -68,12 +62,10 @@ public class DriveTrainByEncoder
         COUNTS_PER_MM           = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_MM * 3.1415) * LINE_CORRECTION;
         COUNTS_PER_DEGREE       = WHEEL_DIAGONAL_DISTANCE / WHEEL_DIAMETER_MM  * COUNTS_PER_MOTOR_REV / 360. * DEGREE_CORRECTION;
 
-
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -149,7 +141,7 @@ public class DriveTrainByEncoder
         TelemetryWrapper.setLine(0,  "Running to (x,y,r)=("+xMillimeters+":"+yMillimeters +":"+rAnglesInDegree+")");
         TelemetryWrapper.setLine(1,  "Wheels to (lf,rf,lr,rr) ("+newLeftFrontTarget+":"+newRightFrontTarget +":"+newLeftBackTarget+":"+newRightBackTarget+")");
         while (
-                (runtime.seconds()< timeoutS) ||
+                (runtime.seconds()< timeoutS) &&
                         (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy())) {
 
             // Display it for the driver.
