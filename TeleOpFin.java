@@ -43,9 +43,9 @@ import org.firstinspires.ftc.teamcode.util.telemetry.TelemetryWrapper;
  * @version 2.0
  */
 
-@TeleOp(name = "TeleOp v2.0",group = "Final")
+@TeleOp(name = "TeleOp v4.0",group = "Final")
 //@Disabled
-public class TeleOpV2 extends LinearOpMode {
+public class TeleOpFin extends LinearOpMode {
     //Import config file
     private Config config = new Config(Config.configFile);
 
@@ -62,7 +62,7 @@ public class TeleOpV2 extends LinearOpMode {
     final boolean USE_ENCODER_FOR_ELEVATOR = false;
 
     //OpMode Version
-    private final String OPMODE_VERSION = "2.0";
+    private final String OPMODE_VERSION = "4.0";
 
     @Override
     public void runOpMode() {
@@ -92,6 +92,7 @@ public class TeleOpV2 extends LinearOpMode {
         else
             elevatorNoEnc.init(hardwareMap,config);
 
+        driveTrain.stop();
 
         //Configuring elevator initial positions
         grabber.openGrabber();
@@ -138,10 +139,10 @@ public class TeleOpV2 extends LinearOpMode {
                 }
             }
             else {
-                if(helper.pressed(ButtonHelper.right_bumper)) {
+                if(helper.pressed(ButtonHelper.right_bumper)||helper2.pressed(ButtonHelper.right_bumper)) {
                     elevatorNoEnc.moveUp();
                 }
-                else if(helper.pressed(ButtonHelper.left_bumper)) {
+                else if(helper.pressed(ButtonHelper.left_bumper)||helper2.pressed(ButtonHelper.left_bumper)) {
                     elevatorNoEnc.moveDown();
                 }
                 else {
@@ -150,7 +151,7 @@ public class TeleOpV2 extends LinearOpMode {
             }
 
             //Claw/Grabber value change
-            if(helper.pressing(ButtonHelper.x)) {
+            if(helper.pressing(ButtonHelper.x)||helper2.pressing(ButtonHelper.x)) {
                 clawStateOpened =! clawStateOpened;
             }
 
@@ -164,10 +165,11 @@ public class TeleOpV2 extends LinearOpMode {
 
             //Updating all variable information to Telemetry Display
             TelemetryWrapper.setLine(0, "TeleOpMode v" + OPMODE_VERSION + "  Time Elapsed[s]: " + (runtime.milliseconds()/1000));
-            TelemetryWrapper.setLine(1, "Motors Multiplier: : " + MOTOR_SPEED_MULTIPLIER);
-            TelemetryWrapper.setLine(2,"Motors: drivex: " + drivex +" drivey: " + drivey+" turn: "+turn);
-            TelemetryWrapper.setLine(3, "Pos Open/Closed: " + grabber.GRABBER_OPENED_POSITION + "/" + grabber.GRABBER_CLOSED_POSITION + "servoStatus: " + clawStateOpened);
-            TelemetryWrapper.setLine(4,"Elevator Power: " + "N/A");
+            TelemetryWrapper.setLine(1, "Motors Multiplier=" + MOTOR_SPEED_MULTIPLIER);
+            TelemetryWrapper.setLine(2,"Motors: drivex=" + drivex +" drivey=" + drivey+" turn="+turn);
+            TelemetryWrapper.setLine(3, "Pos Open/Closed=" + grabber.GRABBER_OPENED_POSITION + "/" + grabber.GRABBER_CLOSED_POSITION + " servoOpened=" + clawStateOpened);
+            TelemetryWrapper.setLine(4,"Elevator Power: " + elevatorNoEnc.LIFT_POWER);
+            TelemetryWrapper.setLine(5,"DriveTrain Adjusts: FL=" + driveTrain.FL_DRIVE_ADJUST + " FR=" + driveTrain.FR_DRIVE_ADJUST + " RL=" + driveTrain.RL_DRIVE_ADJUST + " RR=" + driveTrain.RR_DRIVE_ADJUST);
 
             idle();
         }

@@ -15,8 +15,18 @@ public class DriveTrain {
     double offset;
     HardwareMap hwMap = null;
 
+    static double FL_DRIVE_ADJUST = 1.0;
+    static double FR_DRIVE_ADJUST = 1.0;
+    static double RL_DRIVE_ADJUST = 1.0;
+    static double RR_DRIVE_ADJUST = 1.0;
+
     public void init(HardwareMap Map, Config config) {
         hwMap = Map;
+
+        FL_DRIVE_ADJUST = config.getDouble("fl_speed_adjust",1.0);
+        FR_DRIVE_ADJUST = config.getDouble("fr_speed_adjust",1.0);
+        RL_DRIVE_ADJUST = config.getDouble("rl_speed_adjust",1.0);
+        RR_DRIVE_ADJUST = config.getDouble("rr_speed_adjust",1.0);
 
         leftFront = hwMap.get(DcMotor.class, "fl_drive");
         rightFront = hwMap.get(DcMotor.class, "fr_drive");
@@ -37,10 +47,10 @@ public class DriveTrain {
         speedx = powerx;
         speedy = powery;
         offset = turn;
-        leftFront.setPower(Range.clip(speedy-speedx+offset,-1,1));
-        rightFront.setPower(Range.clip(speedy+speedx-offset,-1,1));
-        leftBack.setPower(Range.clip(speedy+speedx+offset,-1,1));
-        rightBack.setPower(Range.clip(speedy-speedx-offset,-1,1));
+        leftFront.setPower(FL_DRIVE_ADJUST*Range.clip(speedy-speedx+offset,-1,1));
+        rightFront.setPower(FR_DRIVE_ADJUST*Range.clip(speedy+speedx-offset,-1,1));
+        leftBack.setPower(RL_DRIVE_ADJUST*Range.clip(speedy+speedx+offset,-1,1));
+        rightBack.setPower(RR_DRIVE_ADJUST*Range.clip(speedy-speedx-offset,-1,1));
     }
 
     public void stop(){
