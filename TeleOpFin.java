@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.teamcode.util.ButtonHelper;
 import org.firstinspires.ftc.teamcode.util.Config;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -40,7 +42,7 @@ import org.firstinspires.ftc.teamcode.util.telemetry.TelemetryWrapper;
 /**
  * @class OpMode class for team 10741 for FTC
  * @author Wyvern github: https://github.com/Martin-Gong
- * @version 2.0
+ * @version 4.0
  */
 
 @TeleOp(name = "TeleOp v4.0",group = "Final")
@@ -121,7 +123,7 @@ public class TeleOpFin extends LinearOpMode {
             //Movement control
             if (Math.abs(drivey) > 0.01 || Math.abs(drivex) > 0.01 || Math.abs(turn) > 0.01) {
                 driveTrain.move(drivex, drivey, turn);
-            } 
+            }
             else {
                 drivey = -gamepad2.right_stick_y * 0.25;
                 drivex = -gamepad2.right_stick_x * 0.25;
@@ -151,8 +153,12 @@ public class TeleOpFin extends LinearOpMode {
             }
 
             //Claw/Grabber value change
-            if(helper.pressing(ButtonHelper.x)||helper2.pressing(ButtonHelper.x)) {
+            if(helper.pressing(ButtonHelper.x)) {
                 clawStateOpened =! clawStateOpened;
+            }
+
+            if(helper2.pressing(ButtonHelper.x)) {
+                grabber.netIncreasePos(0.1);
             }
 
             //Claw/Grabber position execution
@@ -163,6 +169,11 @@ public class TeleOpFin extends LinearOpMode {
                 grabber.closeGrabber();
             }
 
+            double fl_p = Range.clip(drivey-drivex+turn,-1,1);
+            double fr_p = Range.clip(drivey+drivex-turn,-1,1);
+            double rl_p = Range.clip(drivey+drivex+turn,-1,1);
+            double rr_p = Range.clip(drivey-drivex-turn,-1,1);
+
             //Updating all variable information to Telemetry Display
             TelemetryWrapper.setLine(0, "TeleOpMode v" + OPMODE_VERSION + "  Time Elapsed[s]: " + (runtime.milliseconds()/1000));
             TelemetryWrapper.setLine(1, "Motors Multiplier=" + MOTOR_SPEED_MULTIPLIER);
@@ -170,6 +181,7 @@ public class TeleOpFin extends LinearOpMode {
             TelemetryWrapper.setLine(3, "Pos Open/Closed=" + grabber.GRABBER_OPENED_POSITION + "/" + grabber.GRABBER_CLOSED_POSITION + " servoOpened=" + clawStateOpened);
             TelemetryWrapper.setLine(4,"Elevator Power: " + elevatorNoEnc.LIFT_POWER);
             TelemetryWrapper.setLine(5,"DriveTrain Adjusts: FL=" + driveTrain.FL_DRIVE_ADJUST + " FR=" + driveTrain.FR_DRIVE_ADJUST + " RL=" + driveTrain.RL_DRIVE_ADJUST + " RR=" + driveTrain.RR_DRIVE_ADJUST);
+            TelemetryWrapper.setLine(6,"Motor actual input power: fl="+fl_p+" fr="+fr_p+" rl="+rl_p+" rr="+rr_p);
 
             idle();
         }

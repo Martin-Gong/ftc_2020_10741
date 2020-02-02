@@ -5,10 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.util.Config;
 
-
-
 @Autonomous(name = "AutoBuild")
-public class AutoLoad extends LinearOpMode {
+public class AutoBuild extends LinearOpMode {
     private ElapsedTime runTime = new ElapsedTime();
     DriveTrainByEncoder driveTrain = new DriveTrainByEncoder();
     private Config config = new Config(Config.configFile)  ;

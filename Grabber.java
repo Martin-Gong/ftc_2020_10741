@@ -1,8 +1,8 @@
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
+package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.util.Config;
 
 public class Grabber {
@@ -22,6 +22,8 @@ public class Grabber {
         grabber = hwMap.get(Servo.class, "grabber");
 
         grabber.setDirection(Servo.Direction.FORWARD);
+
+        openGrabber();
     }
 
     public void closeGrabber() {
@@ -30,5 +32,10 @@ public class Grabber {
 
     public void openGrabber() {
         grabber.setPosition(GRABBER_OPENED_POSITION);
+    }
+
+    public void netIncreasePos (double pos) {
+        double targetPos = grabber.getPosition()-pos;
+        grabber.setPosition(Range.clip(targetPos,0,1));
     }
 }
