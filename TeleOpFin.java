@@ -153,13 +153,15 @@ public class TeleOpFin extends LinearOpMode {
             }
 
             //Claw/Grabber value change
-            if(helper.pressing(ButtonHelper.x)) {
+            if(helper.pressing(ButtonHelper.x)||helper2.pressing(ButtonHelper.x)) {
                 clawStateOpened =! clawStateOpened;
             }
 
-            if(helper2.pressing(ButtonHelper.x)) {
-                grabber.netIncreasePos(0.1);
-            }
+            if(helper.pressing(ButtonHelper.start)||helper.pressing(ButtonHelper.start)) driveTrain.stop();
+
+//            if(helper2.pressing(ButtonHelper.x)) {
+//                grabber.netIncreasePos(0.1);
+//            }
 
             //Claw/Grabber position execution
             if(clawStateOpened) {
