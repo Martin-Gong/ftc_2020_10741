@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.util.ButtonHelper;
 import org.firstinspires.ftc.teamcode.util.Config;
 import com.qualcomm.robotcore.util.Range;
 
+@TeleOp(name = "TeleOp Non-麦克纳姆",group = "Experimental")
 public class NormalWheelOp extends LinearOpMode {
     DcMotor leftFront   = null;
     DcMotor rightFront   = null;
